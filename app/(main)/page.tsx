@@ -20,29 +20,48 @@ import { siteConfig } from "@/config/site"
 import {
   usePropertyManagerRead,
   usePropertyManagerWrite,
+  usePropertyOwner,
+  usePropertyRead,
+  usePropertyWrite,
   useTestTokenRead,
   useTestTokenWrite,
+  usePropertyManagerGetProperties
 } from "@/lib/generated"
 import { stringify } from "@/lib/utils"
-import { Button, buttonVariants } from "@/components/ui/button"
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import CreateNewPropertyForm from "@/app/(main)/_components/CreateNewPropertyForm"
-
+import { useRouter } from 'next/navigation'
 import { ProfileForm } from "./_components/PropertyDataForm"
 
 export default function IndexPage() {
   const { address, isConnecting, isDisconnected } = useAccount()
+  const { data, isError, isLoading } = usePropertyManagerGetProperties({
+    address: PROPERTY_MANAGER_ADDRESS,
+  })
 
+  if(isLoading) return <div>Loading...</div>
+
+  console.log(data)
   return (
     <section className="container grid items-center gap-6 pb-8 pt-6 md:py-10">
       <div className="flex max-w-[980px] flex-col items-start gap-2">
-        {/* <Balance account={address} />
-        <ReadPropertyManager />
-        {/* <CreateNewPropertyForm />
-      <ProfileForm /> */}
         MAIN PAGE
+        {data?.map((property) => (
+            <PropertyCard contractAddress={property} />
+        ))}
         <PurchaseTokens />
         <ReadTestToken />
         <ApproveTestToken />
+        <ReadPropertyOwner />
+        {/* <PropertyCard contractAddress={}/> */}
       </div>
     </section>
   )
@@ -80,8 +99,8 @@ function ApproveTestToken() {
     functionName: "approve",
     args: [PROPERTY_MANAGER_ADDRESS, ethers.MaxUint256],
   })
-  if(isLoading) return <div>Loading</div>
-  if(isSuccess) return <div>Success</div>
+  if (isLoading) return <div>Loading</div>
+  if (isSuccess) return <div>Success</div>
   return (
     <div>
       <Button onClick={() => write()}>Approve</Button>
@@ -100,6 +119,18 @@ function ReadPropertyManager() {
   return <div>{data}</div>
 }
 
+function ReadPropertyOwner() {
+  const { data, isError, isLoading } = usePropertyRead({
+    address: "0xcbA2534c14244381C040e908c684AcD1EB7098eb",
+    functionName: "propertyOwnerContact",
+    // args: [],
+  })
+
+  if (isLoading) return <div>Fetching owner</div>
+  if (isError) return <div>Error fetching owner</div>
+  return <div>AMAL PROPERTY CONTRACT ADDRESS {data}</div>
+}
+
 function PurchaseTokens() {
   const { data, isLoading, isSuccess, write } = usePropertyManagerWrite({
     address: PROPERTY_MANAGER_ADDRESS,
@@ -113,5 +144,25 @@ function PurchaseTokens() {
       {isLoading && <div>Check Wallet</div>}
       {isSuccess && <div>Transaction: {JSON.stringify(data)}</div>}
     </div>
+  )
+}
+
+
+
+function PropertyCard({contractAddress} : {contractAddress: string}) {
+  const router = useRouter()
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Card Title</CardTitle>
+        <CardDescription>Card Description</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <p>Card Content</p>
+      </CardContent>
+      <CardFooter className="flex justify-between">
+        <Button variant="ghost" onClick={() => router.push(`/properties/${contractAddress}`)}>Go to</Button>
+      </CardFooter>
+    </Card>
   )
 }
