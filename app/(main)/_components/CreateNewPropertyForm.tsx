@@ -9,6 +9,7 @@ import * as z from "zod"
 
 import {
   CreateNewPropertyDto,
+  FinalPropertyFormData,
   ImagesSchema,
   PropertyAddressDto,
   PropertyAddressSchema,
@@ -24,8 +25,9 @@ import {
   usePropertyManagerCreateNewProperty,
   usePropertyManagerWrite,
 } from "@/lib/generated"
-import { separateString } from "@/lib/utils"
+import { formatLabel, separateString } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import {
   Form,
   FormControl,
@@ -36,27 +38,62 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { DatePicker } from "@/components/date-picker"
 
 const CreateNewPropertyForm = () => {
   const [nextForm, setNextForm] = useState(0)
-  const [fullFormData, setFullFormData] = useState<PropertyFormData>([] as any)
+  const [fullFormData, setFullFormData] = useState<PropertyFormData>([
+    {} as PropertyAddressDto,
+    {} as PropertyDataDto,
+    {} as PropertyOwnerContactDto,
+    [] as string[],
+  ])
+
+  const [finalFullFormData, setFinalFullFormData] =
+    useState<FinalPropertyFormData>()
 
   const { data, isLoading, isSuccess, write } =
     usePropertyManagerCreateNewProperty({
       address: PROPERTY_MANAGER_ADDRESS,
-      args: fullFormData,
+      args: finalFullFormData,
     })
 
   const formAddress = useForm<PropertyAddressDto>({
     resolver: zodResolver(PropertyAddressSchema),
+    defaultValues: {
+      unitNumber: "",
+      street: "",
+      city: "",
+      state: "",
+      zip: "",
+      country: "",
+    },
   })
 
   const formData = useForm<PropertyDataDto>({
     resolver: zodResolver(PropertyDataSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+      propertyStatus: "",
+      propertyType: "",
+      landSize: "",
+      pricePerSqft: "",
+      bedrooms: "",
+      bathrooms: "",
+      yearBuilt: "",
+      lastSoldPrice: "",
+      lastSoldDate: new Date(),
+    },
   })
 
   const formContact = useForm<PropertyOwnerContactDto>({
     resolver: zodResolver(PropertyOwnerContactSchema),
+    defaultValues: {
+      email: "",
+      phone: "",
+      name: "",
+    },
   })
 
   const formImages = useForm<z.infer<typeof ImagesSchema>>({
@@ -66,6 +103,7 @@ const CreateNewPropertyForm = () => {
         "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR, QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR, QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
     },
   })
+
   const handleFormSubmit = (
     data:
       | PropertyAddressDto
@@ -91,55 +129,70 @@ const CreateNewPropertyForm = () => {
     const images = formImages.getValues().images
     const imagesArray = separateString(images)
     setFullFormData((prevFormData): any => {
-      let newFormData = [...prevFormData, imagesArray]
+      let newFormData = [...prevFormData]
+      newFormData[3] = imagesArray
       return newFormData
     })
     console.log("fullFormData", fullFormData)
-
-    write?.()
   }
 
   useEffect(() => {
     console.log("fullFormData updated", fullFormData)
-    const transformArray = fullFormData.map((obj) => {
-      return Object.values(obj)
+    if (fullFormData[3].length <= 0) return
+    const newFullFormData = fullFormData.map((data, index) => {
+      if (index === 1) {
+        const { lastSoldDate, ...rest } = data as PropertyDataDto
+        return {
+          ...rest,
+          lastSoldDate: lastSoldDate.toISOString().substring(0, 10),
+        }
+      }
+      return data
     })
-    console.log("transformArray", transformArray)
+    setFinalFullFormData(newFullFormData as FinalPropertyFormData)
   }, [fullFormData])
+
+  useEffect(() => {
+    console.log("finalFullFormData updated", finalFullFormData)
+
+    if (finalFullFormData?.length === 4 && finalFullFormData[3].length > 0) {
+      write?.()
+    }
+  }, [finalFullFormData])
+
+  // if (isLoading) return <div>Loading...</div>
+  if (isSuccess) return <div>Success</div>
 
   return (
     <div>
       <Form {...formAddress}>
         <form
           onSubmit={formAddress.handleSubmit(handleFormSubmit)}
-          className="space-y-8"
+          className="space-y-3"
         >
           {nextForm === 0 && (
             <div>
-              {Object.entries(PropertyAddressSchema.shape).map(
-                ([key, value]) => (
-                  <div key={key}>
-                    <FormField
-                      control={formAddress.control}
-                      name={`${key}` as any}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{key}</FormLabel>
-                          <FormControl>
-                            <Input placeholder="a" {...field} />
-                          </FormControl>
-                          <FormDescription>
-                            {value._def.description ||
-                              "No description provided."}
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                )
-              )}
-              <Button type="submit">Next</Button>
+              {Object.entries(PropertyAddressSchema.shape).map(([key]) => (
+                <div key={key}>
+                  <FormField
+                    control={formAddress.control}
+                    name={`${key as keyof PropertyAddressDto}`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{formatLabel(key)}</FormLabel>
+                        <FormControl>
+                          <Input placeholder={formatLabel(key)} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              ))}
+
+              <Button type="submit" className="mt-3">
+                Next
+              </Button>
             </div>
           )}
         </form>
@@ -149,29 +202,48 @@ const CreateNewPropertyForm = () => {
         <Form {...formData}>
           <form
             onSubmit={formData.handleSubmit(handleFormSubmit)}
-            className="space-y-8"
+            className="space-y-3"
           >
             {Object.entries(PropertyDataSchema.shape).map(([key, value]) => (
               <div key={key}>
                 <FormField
                   control={formData.control}
-                  name={`${key}` as any}
+                  name={`${key}` as keyof PropertyDataDto}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{key}</FormLabel>
+                      <FormLabel>{formatLabel(key)}</FormLabel>
                       <FormControl>
-                        <Input placeholder="" {...field} />
+                        {key === "lastSoldDate" ? (
+                          <div>
+                            <DatePicker />
+                          </div>
+                        ) : (
+                          <Input
+                            placeholder={formatLabel(key)}
+                            {...(field as any)}
+                          />
+                        )}
                       </FormControl>
-                      <FormDescription>
-                        {value._def.description || "No description provided."}
-                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
             ))}
-            <Button type="submit">Next</Button>
+            <div className="flex justify-between">
+              <Button
+                className="mt-1"
+                variant="outline"
+                onClick={() => {
+                  setNextForm((prevFormNo) => prevFormNo - 1)
+                }}
+              >
+                Previous
+              </Button>
+              <Button type="submit" className="mt-1">
+                Next
+              </Button>
+            </div>
           </form>
         </Form>
       )}
@@ -180,23 +252,20 @@ const CreateNewPropertyForm = () => {
         <Form {...formContact}>
           <form
             onSubmit={formContact.handleSubmit(handleFormSubmit)}
-            className="space-y-8"
+            className="space-y-3"
           >
             {Object.entries(PropertyOwnerContactSchema.shape).map(
               ([key, value]) => (
                 <div key={key}>
                   <FormField
                     control={formContact.control}
-                    name={`${key}` as any}
+                    name={`${key}` as keyof PropertyOwnerContactDto}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{key}</FormLabel>
+                        <FormLabel>{formatLabel(key)}</FormLabel>
                         <FormControl>
-                          <Input placeholder="" {...field} />
+                          <Input placeholder={formatLabel(key)} {...field} />
                         </FormControl>
-                        <FormDescription>
-                          {value._def.description || "No description provided."}
-                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -204,7 +273,20 @@ const CreateNewPropertyForm = () => {
                 </div>
               )
             )}
-            <Button type="submit">Next</Button>
+            <div className="flex justify-between">
+              <Button
+                onClick={() => {
+                  setNextForm((prevFormNo) => prevFormNo - 1)
+                }}
+                className="mt-1"
+                variant="outline"
+              >
+                Previous
+              </Button>
+              <Button type="submit" className="mt-1">
+                Next
+              </Button>
+            </div>
           </form>
         </Form>
       )}
@@ -212,8 +294,9 @@ const CreateNewPropertyForm = () => {
       {nextForm === 3 && (
         <Form {...formImages}>
           <form
+            id="final-form"
             onSubmit={formImages.handleSubmit(handleAllFormSubmit)}
-            className="space-y-8"
+            className="space-y-3"
           >
             <div key="images">
               <FormField
@@ -231,7 +314,20 @@ const CreateNewPropertyForm = () => {
                 )}
               />
             </div>
-            <Button type="submit">Submit</Button>
+            <div className="flex justify-between">
+              <Button
+                onClick={() => {
+                  setNextForm((prevFormNo) => prevFormNo - 1)
+                }}
+                className="mt-1"
+                variant="outline"
+              >
+                Previous
+              </Button>
+              <div className="mt-1">
+                <ConfirmDialog form="final-form" isLoading={isLoading} />
+              </div>
+            </div>
           </form>
         </Form>
       )}

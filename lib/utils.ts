@@ -19,3 +19,13 @@ export const positiveNumberString = (input: string) => {
 
 export const separateString = (str: string): string[] =>
   str.split(",").map((v) => v.trim())
+
+export const formatLabel = (str: string): string => {
+  str = str.replace(/([A-Z])/g, " $1")
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}
+
+// export const formatLabel = (str: string): string => {
+//   str = str.replace(/([A-Z])/g, " $1");
+//   return str.charAt(0).toUpperCase() + str.slice(1);
+// };

@@ -1,11 +1,12 @@
 "use client"
 
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import {
   PROPERTY_MANAGER_ADDRESS,
   TEST_TOKEN_ADDRESS,
 } from "@/constants/contract-artifacts"
-import { ethers } from "ethers"
+import { dataSlice, ethers } from "ethers"
 import {
   useAccount,
   useBalance,
@@ -18,6 +19,7 @@ import { InjectedConnector } from "wagmi/connectors/injected"
 
 import { siteConfig } from "@/config/site"
 import {
+  usePropertyManagerGetProperties,
   usePropertyManagerRead,
   usePropertyManagerWrite,
   usePropertyOwner,
@@ -25,7 +27,6 @@ import {
   usePropertyWrite,
   useTestTokenRead,
   useTestTokenWrite,
-  usePropertyManagerGetProperties
 } from "@/lib/generated"
 import { stringify } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -37,8 +38,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 import CreateNewPropertyForm from "@/app/(main)/_components/CreateNewPropertyForm"
-import { useRouter } from 'next/navigation'
+
 import { ProfileForm } from "./_components/PropertyDataForm"
 
 export default function IndexPage() {
@@ -47,7 +49,7 @@ export default function IndexPage() {
     address: PROPERTY_MANAGER_ADDRESS,
   })
 
-  if(isLoading) return <div>Loading...</div>
+  // if(isLoading) return <Skeleton className="w-[100px] h-[20px] rounded-full"/>
 
   console.log(data)
   return (
@@ -55,7 +57,7 @@ export default function IndexPage() {
       <div className="flex max-w-[980px] flex-col items-start gap-2">
         MAIN PAGE
         {data?.map((property) => (
-            <PropertyCard contractAddress={property} />
+          <PropertyCard contractAddress={property} />
         ))}
         <PurchaseTokens />
         <ReadTestToken />
@@ -72,7 +74,7 @@ function Balance(props: { account: string | undefined }) {
     address: props.account as `0x${string}`,
   })
 
-  if (isLoading) return <div>Fetching balance…</div>
+  if (isLoading) return <Skeleton className="w-[100px] h-[20px] rounded-full" />
   if (isError) return <div>Error fetching balance</div>
   return (
     <div>
@@ -88,7 +90,7 @@ function ReadTestToken() {
     args: ["0x8683301fE5Cf1c9AbcF2BDC5fbCB7370Ea0147FE"],
   })
 
-  if (isLoading) return <div>Fetching balance…</div>
+  if (isLoading) return <Skeleton className="w-[100px] h-[20px] rounded-full" />
   if (isError) return <div>Error fetching balance</div>
   return <div>Balance: {ethers.formatEther(data!)}</div>
 }
@@ -99,7 +101,7 @@ function ApproveTestToken() {
     functionName: "approve",
     args: [PROPERTY_MANAGER_ADDRESS, ethers.MaxUint256],
   })
-  if (isLoading) return <div>Loading</div>
+  if (isLoading) return <Skeleton className="w-[100px] h-[20px] rounded-full" />
   if (isSuccess) return <div>Success</div>
   return (
     <div>
@@ -114,7 +116,7 @@ function ReadPropertyManager() {
     // args: [],
   })
 
-  if (isLoading) return <div>Fetching owner</div>
+  if (isLoading) return <Skeleton className="w-[100px] h-[20px] rounded-full" />
   if (isError) return <div>Error fetching owner</div>
   return <div>{data}</div>
 }
@@ -122,13 +124,13 @@ function ReadPropertyManager() {
 function ReadPropertyOwner() {
   const { data, isError, isLoading } = usePropertyRead({
     address: "0xcbA2534c14244381C040e908c684AcD1EB7098eb",
-    functionName: "propertyOwnerContact",
+    functionName: "propertyAddress",
     // args: [],
   })
-
-  if (isLoading) return <div>Fetching owner</div>
+  console.log(data?.map((property) => property))
+  if (isLoading) return <Skeleton className="w-[100px] h-[20px] rounded-full" />
   if (isError) return <div>Error fetching owner</div>
-  return <div>AMAL PROPERTY CONTRACT ADDRESS {data}</div>
+  return <div>AMAL PROPERTY ADDRESS {data}</div>
 }
 
 function PurchaseTokens() {
@@ -147,9 +149,7 @@ function PurchaseTokens() {
   )
 }
 
-
-
-function PropertyCard({contractAddress} : {contractAddress: string}) {
+function PropertyCard({ contractAddress }: { contractAddress: string }) {
   const router = useRouter()
   return (
     <Card>
@@ -161,7 +161,12 @@ function PropertyCard({contractAddress} : {contractAddress: string}) {
         <p>Card Content</p>
       </CardContent>
       <CardFooter className="flex justify-between">
-        <Button variant="ghost" onClick={() => router.push(`/properties/${contractAddress}`)}>Go to</Button>
+        <Button
+          variant="ghost"
+          onClick={() => router.push(`/properties/${contractAddress}`)}
+        >
+          Go to
+        </Button>
       </CardFooter>
     </Card>
   )

@@ -6,6 +6,7 @@ import {
   TEST_TOKEN_ADDRESS,
 } from "@/constants/contract-artifacts"
 import { ethers } from "ethers"
+import { set } from "react-hook-form"
 import {
   useAccount,
   useBalance,
@@ -28,10 +29,10 @@ import CreateNewPropertyForm from "@/app/(main)/_components/CreateNewPropertyFor
 
 import { ProfileForm } from "../_components/PropertyDataForm"
 
-export default function CreateNewPropertyPage() {
+export default async function CreateNewPropertyPage() {
   return (
-    <section className="container grid items-center gap-6 pb-8 pt-6 md:py-10">
-      <div className="flex max-w-[980px] flex-col items-center gap-2">
+    <section className="container flex items-center gap-6 pb-8 pt-6 md:py-10">
+      <div className="flex w-screen flex-col items-center gap-2">
         <CreateNewPropertyForm />
       </div>
     </section>
