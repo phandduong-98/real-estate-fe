@@ -1,6 +1,9 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { CheckSquare } from "lucide-react"
+import { PacmanLoader } from "react-spinners"
 
-import { AlertDialogCancel } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -11,20 +14,41 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Skeleton } from "@/components/ui/skeleton"
+import { useToast } from "@/components/ui/use-toast"
 
 export function ConfirmDialog({
   form,
   isLoading,
+  isSuccess,
+  data,
 }: {
   form: string
   isLoading: boolean
+  isSuccess: boolean
+  data: any
 }) {
   const [isOpen, setIsOpen] = useState(false)
+  const { toast } = useToast()
+
   // const [isLoading, setIsLoading] = useState(false)
-  console.log(isLoading)
+  useEffect(() => {
+    if (isSuccess) {
+      const txLink = `https://mumbai.polygonscan.com/tx/${data?.hash}`
+      toast({
+        title: "Property Created",
+        description: (
+          <>
+            Your property has been created.
+            <br />
+            <Link href={txLink} className="mt-2 text-blue-500">
+              View transaction on PolygonScan.
+            </Link>
+          </>
+        ),
+      })
+    }
+  }, [isSuccess])
+
   return (
     <Dialog open={isOpen}>
       <DialogTrigger asChild>
@@ -37,7 +61,23 @@ export function ConfirmDialog({
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         {isLoading ? (
-          <Skeleton />
+          <div className="flex items-center">
+            <DialogTitle>Cooking the transaction</DialogTitle>
+            <PacmanLoader color="#0F172A" className="ml-10" />
+          </div>
+        ) : isSuccess ? (
+          <div className="flex justify-center">
+            <CheckSquare size={150} strokeWidth={1.75} />
+            <div className="flex flex-col items-center mt-5">
+              <DialogTitle>Property Created</DialogTitle>
+              <DialogDescription>
+                Your property has been created.
+              </DialogDescription>
+              <Link href="/">
+                <Button className="mt-4">View Properties</Button>
+              </Link>
+            </div>
+          </div>
         ) : (
           <>
             <DialogHeader>
@@ -53,8 +93,7 @@ export function ConfirmDialog({
               <Button variant="outline" onClick={() => setIsOpen(false)}>
                 Cancel
               </Button>
-              <Button type="submit" form={form} onClick={() => {
-                setIsOpen(true)}}>
+              <Button type="submit" form={form}>
                 Create
               </Button>
             </DialogFooter>

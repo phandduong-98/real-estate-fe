@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import {
@@ -28,7 +29,7 @@ import {
   useTestTokenRead,
   useTestTokenWrite,
 } from "@/lib/generated"
-import { stringify } from "@/lib/utils"
+import { cn, stringify } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -41,25 +42,28 @@ import {
 import { Skeleton } from "@/components/ui/skeleton"
 import CreateNewPropertyForm from "@/app/(main)/_components/CreateNewPropertyForm"
 
+import { FormToast } from "./_components/CreateNewPropertyFormToaster"
 import { ProfileForm } from "./_components/PropertyDataForm"
 
-export default function IndexPage() {
+export default async function IndexPage() {
   const { address, isConnecting, isDisconnected } = useAccount()
   const { data, isError, isLoading } = usePropertyManagerGetProperties({
     address: PROPERTY_MANAGER_ADDRESS,
   })
 
   // if(isLoading) return <Skeleton className="w-[100px] h-[20px] rounded-full"/>
-
   console.log(data)
   return (
     <section className="container grid items-center gap-6 pb-8 pt-6 md:py-10">
-      <div className="flex max-w-[980px] flex-col items-start gap-2">
-        <h2 className="text-red-700 font-bold">Find your properties</h2>
+      
+      <h2 className="text-red-700 font-bold">Find your properties</h2>
+      <div className="grid grid-cols-4 gap-12 px-16">
         {data?.map((property) => (
-          <PropertyCard contractAddress={property} />
+          <div className="col-span-1 ">
+            {" "}
+            <PropertyCard contractAddress={property} />{" "}
+          </div>
         ))}
-        {/* <PropertyCard contractAddress={}/> */}
       </div>
     </section>
   )
@@ -91,7 +95,6 @@ function ReadTestToken() {
   return <div>Balance: {ethers.formatEther(data!)}</div>
 }
 
-
 function ReadPropertyManager() {
   const { data, isError, isLoading } = usePropertyManagerRead({
     address: PROPERTY_MANAGER_ADDRESS,
@@ -116,29 +119,40 @@ function ReadPropertyOwner() {
   return <div>AMAL PROPERTY ADDRESS {data}</div>
 }
 
-
-function PropertyCard({contractAddress} : {contractAddress: string}) {
+function PropertyCard({ contractAddress }: { contractAddress: string }) {
   const router = useRouter()
-  
-  const { data} = usePropertyRead({
+
+  const { data } = usePropertyRead({
     address: contractAddress as `0x${string}`,
     functionName: "propertyAddress",
   })
-  if (data != undefined)
-  {
+  if (data != undefined) {
     const addressString = data.join(", ")
     return (
-      <Card>
-        <CardHeader>
-          <CardContent>{addressString}</CardContent>
-          <svg className="fill-current text-teal-500 inline-block h-12 w-12" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-            <path d="M18 9.87V20H2V9.87a4.25 4.25 0 0 0 3-.38V14h10V9.5a4.26 4.26 0 0 0 3 .37zM3 0h4l-.67 6.03A3.43 3.43 0 0 1 3 9C1.34 9 .42 7.73.95 6.15L3 0zm5 0h4l.7 6.3c.17 1.5-.91 2.7-2.42 2.7h-.56A2.38 2.38 0 0 1 7.3 6.3L8 0zm5 0h4l2.05 6.15C19.58 7.73 18.65 9 17 9a3.42 3.42 0 0 1-3.33-2.97L13 0z"/>
-          </svg>
-        
-      </CardHeader>
-      <CardFooter className="flex justify-between">
-        <Button className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"   onClick={() => router.push(`/properties/${contractAddress}`)}>Go to</Button>
-      </CardFooter>
-    </Card>
-  )}
+      <Card className="flex flex-col items-center overflow-hidden h-full w-full border-none">
+        <CardHeader className="p-0 relative">
+          <div className="relative rounded-md">
+            <p className="text-zinc-100 absolute z-10 top-5 left-5 font-semibold text-2xl drop-shadow-2xl">Atlanta,GA</p>
+            <Image
+              alt=""
+              height={330}
+              width= {250}
+              className={cn(
+                "h-auto w-auto object-cover transition-all hover:scale-110",
+                "aspect-[3/4] rounded-md z-0 duration-1000"
+              )}
+              src="https://plus.unsplash.com/premium_photo-1677735108001-cd9b99efd5ff?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80"
+            ></Image>
+            <Button variant="ghost" className="left-5 z-10 bottom-4 bg-slate-400 absolute bg-opacity-50 text-white" onClick={() => router.push(`/properties/${contractAddress}`)}
+          >
+            View Property
+          </Button>
+        {/* <CardFooter className="flex justify-between p-0">
+    
+        </CardFooter> */}
+          </div>
+        </CardHeader>
+      </Card>
+    )
+  }
 }

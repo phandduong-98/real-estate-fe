@@ -38,9 +38,11 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { useToast } from "@/components/ui/use-toast"
 import { DatePicker } from "@/components/date-picker"
 
 const CreateNewPropertyForm = () => {
+  const { toast } = useToast()
   const [nextForm, setNextForm] = useState(0)
   const [fullFormData, setFullFormData] = useState<PropertyFormData>([
     {} as PropertyAddressDto,
@@ -61,28 +63,28 @@ const CreateNewPropertyForm = () => {
   const formAddress = useForm<PropertyAddressDto>({
     resolver: zodResolver(PropertyAddressSchema),
     defaultValues: {
-      unitNumber: "",
-      street: "",
-      city: "",
-      state: "",
-      zip: "",
-      country: "",
+      unitNumber: "123",
+      street: "123",
+      city: "123",
+      state: "123",
+      zip: "123",
+      country: "123",
     },
   })
 
   const formData = useForm<PropertyDataDto>({
     resolver: zodResolver(PropertyDataSchema),
     defaultValues: {
-      name: "",
-      description: "",
-      propertyStatus: "",
-      propertyType: "",
-      landSize: "",
-      pricePerSqft: "",
-      bedrooms: "",
-      bathrooms: "",
-      yearBuilt: "",
-      lastSoldPrice: "",
+      name: "123",
+      description: "123",
+      propertyStatus: "123",
+      propertyType: "123",
+      landSize: "123",
+      pricePerSqft: "123",
+      bedrooms: "123",
+      bathrooms: "123",
+      yearBuilt: "123",
+      lastSoldPrice: "123",
       lastSoldDate: new Date(),
     },
   })
@@ -90,9 +92,9 @@ const CreateNewPropertyForm = () => {
   const formContact = useForm<PropertyOwnerContactDto>({
     resolver: zodResolver(PropertyOwnerContactSchema),
     defaultValues: {
-      email: "",
-      phone: "",
-      name: "",
+      email: "123@gmail.com",
+      phone: "123",
+      name: "123",
     },
   })
 
@@ -161,7 +163,10 @@ const CreateNewPropertyForm = () => {
   }, [finalFullFormData])
 
   // if (isLoading) return <div>Loading...</div>
-  if (isSuccess) return <div>Success</div>
+  // if(isSuccess) toast({
+  //   title: "Property Created",
+  //   description: "Your property has been created successfully",
+  // })
 
   return (
     <div>
@@ -189,10 +194,11 @@ const CreateNewPropertyForm = () => {
                   />
                 </div>
               ))}
-
-              <Button type="submit" className="mt-3">
-                Next
-              </Button>
+              <div className="flex w-full justify-end">
+                <Button type="submit" className="mt-3 items-end">
+                  Next
+                </Button>
+              </div>
             </div>
           )}
         </form>
@@ -304,7 +310,7 @@ const CreateNewPropertyForm = () => {
                 name={`images`}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>images</FormLabel>
+                    <FormLabel>Images</FormLabel>
                     <FormControl>
                       <Input placeholder="" {...field} />
                     </FormControl>
@@ -325,7 +331,12 @@ const CreateNewPropertyForm = () => {
                 Previous
               </Button>
               <div className="mt-1">
-                <ConfirmDialog form="final-form" isLoading={isLoading} />
+                <ConfirmDialog
+                  form="final-form"
+                  isLoading={isLoading}
+                  isSuccess={isSuccess}
+                  data={data}
+                />{" "}
               </div>
             </div>
           </form>

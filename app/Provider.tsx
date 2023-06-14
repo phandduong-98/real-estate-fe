@@ -21,6 +21,8 @@ import {
 import { alchemyProvider } from "wagmi/providers/alchemy"
 import { publicProvider } from "wagmi/providers/public"
 
+import { Toaster } from "@/components/toaster"
+
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [
     mainnet,
@@ -64,6 +66,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <WagmiConfig config={wagmiConfig}>
       <RainbowKitProvider chains={chains} appInfo={appInfo}>
+        <Toaster />
         {mounted && children}
       </RainbowKitProvider>
     </WagmiConfig>

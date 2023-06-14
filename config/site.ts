@@ -10,7 +10,7 @@ export const siteConfig = {
       href: "/",
     },
     {
-      title: "Add new Property",
+      title: "Add New Property",
       href: "/create-new-property",
     },
     {
