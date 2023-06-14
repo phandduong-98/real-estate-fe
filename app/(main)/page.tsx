@@ -55,14 +55,10 @@ export default function IndexPage() {
   return (
     <section className="container grid items-center gap-6 pb-8 pt-6 md:py-10">
       <div className="flex max-w-[980px] flex-col items-start gap-2">
-        MAIN PAGE
+        <h2 className="text-red-700 font-bold">Find your properties</h2>
         {data?.map((property) => (
           <PropertyCard contractAddress={property} />
         ))}
-        <PurchaseTokens />
-        <ReadTestToken />
-        <ApproveTestToken />
-        <ReadPropertyOwner />
         {/* <PropertyCard contractAddress={}/> */}
       </div>
     </section>
@@ -95,20 +91,7 @@ function ReadTestToken() {
   return <div>Balance: {ethers.formatEther(data!)}</div>
 }
 
-function ApproveTestToken() {
-  const { data, isLoading, isSuccess, write } = useTestTokenWrite({
-    address: TEST_TOKEN_ADDRESS,
-    functionName: "approve",
-    args: [PROPERTY_MANAGER_ADDRESS, ethers.MaxUint256],
-  })
-  if (isLoading) return <Skeleton className="w-[100px] h-[20px] rounded-full" />
-  if (isSuccess) return <div>Success</div>
-  return (
-    <div>
-      <Button onClick={() => write()}>Approve</Button>
-    </div>
-  )
-}
+
 function ReadPropertyManager() {
   const { data, isError, isLoading } = usePropertyManagerRead({
     address: PROPERTY_MANAGER_ADDRESS,
@@ -133,41 +116,29 @@ function ReadPropertyOwner() {
   return <div>AMAL PROPERTY ADDRESS {data}</div>
 }
 
-function PurchaseTokens() {
-  const { data, isLoading, isSuccess, write } = usePropertyManagerWrite({
-    address: PROPERTY_MANAGER_ADDRESS,
-    functionName: "purchaseTokens",
-    value: ethers.parseEther("0.1"),
-  })
 
-  return (
-    <div>
-      <Button onClick={() => write()}>purchase</Button>
-      {isLoading && <div>Check Wallet</div>}
-      {isSuccess && <div>Transaction: {JSON.stringify(data)}</div>}
-    </div>
-  )
-}
-
-function PropertyCard({ contractAddress }: { contractAddress: string }) {
+function PropertyCard({contractAddress} : {contractAddress: string}) {
   const router = useRouter()
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Card Title</CardTitle>
-        <CardDescription>Card Description</CardDescription>
+  
+  const { data} = usePropertyRead({
+    address: contractAddress as `0x${string}`,
+    functionName: "propertyAddress",
+  })
+  if (data != undefined)
+  {
+    const addressString = data.join(", ")
+    return (
+      <Card>
+        <CardHeader>
+          <CardContent>{addressString}</CardContent>
+          <svg className="fill-current text-teal-500 inline-block h-12 w-12" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+            <path d="M18 9.87V20H2V9.87a4.25 4.25 0 0 0 3-.38V14h10V9.5a4.26 4.26 0 0 0 3 .37zM3 0h4l-.67 6.03A3.43 3.43 0 0 1 3 9C1.34 9 .42 7.73.95 6.15L3 0zm5 0h4l.7 6.3c.17 1.5-.91 2.7-2.42 2.7h-.56A2.38 2.38 0 0 1 7.3 6.3L8 0zm5 0h4l2.05 6.15C19.58 7.73 18.65 9 17 9a3.42 3.42 0 0 1-3.33-2.97L13 0z"/>
+          </svg>
+        
       </CardHeader>
-      <CardContent>
-        <p>Card Content</p>
-      </CardContent>
       <CardFooter className="flex justify-between">
-        <Button
-          variant="ghost"
-          onClick={() => router.push(`/properties/${contractAddress}`)}
-        >
-          Go to
-        </Button>
+        <Button className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"   onClick={() => router.push(`/properties/${contractAddress}`)}>Go to</Button>
       </CardFooter>
     </Card>
-  )
+  )}
 }
