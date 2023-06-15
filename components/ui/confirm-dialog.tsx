@@ -40,7 +40,7 @@ export function ConfirmDialog({
           <>
             Your property has been created.
             <br />
-            <Link href={txLink} className="mt-2 text-blue-500">
+            <Link href={txLink} rel="noopener noreferrer" target="_blank" className="mt-2 text-blue-500">
               View transaction on PolygonScan.
             </Link>
           </>

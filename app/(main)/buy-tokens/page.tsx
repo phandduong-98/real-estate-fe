@@ -33,17 +33,17 @@ const page = () => {
   const [maticValue, setMaticValue] = useState<string>("0")
   const [tokenValue, setTokenValue] = useState<string>("0")
   const ratio = 1000
+
   const handleMaticChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(e.target.value)  
     let result = 0
-    if (value !== 0) {    
+    // if (value !== 0) {    
       result = value * ratio   
-      setMaticValue(value.toString())  
-    }     
+      setMaticValue(e.target.value)  
+    // }     
     setTokenValue(result.toString())   
   }
   
-
   const handleTokenChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(e.target.value)  
     const result = value / ratio
@@ -79,7 +79,6 @@ const page = () => {
               <Label htmlFor="name">TOKEN</Label>
               <Input
                 type="number"
-            
                 value={tokenValue}
                 onChange={handleTokenChange}
                 id="token"
@@ -90,7 +89,7 @@ const page = () => {
         </form>
       </CardContent>
       <CardFooter className="flex justify-between">
-          <PurchaseTokens amount={maticValue} />
+          <PurchaseTokens amount={isNaN(Number(maticValue)) || maticValue === ""? "0" : maticValue.toString()} />
       </CardFooter>
     </Card>
   )
@@ -136,7 +135,7 @@ function PurchaseTokens({amount} : {amount: string}) {
           <>
             Your token balance has been credited.
             <br />
-            <Link href={txLink} className="mt-2 text-blue-500">
+            <Link href={txLink} rel="noopener noreferrer" target="_blank" className="mt-2 text-blue-500">
               View transaction on PolygonScan.
             </Link>
           </>
