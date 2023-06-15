@@ -46,7 +46,6 @@ import { FormToast } from "./_components/CreateNewPropertyFormToaster"
 import { ProfileForm } from "./_components/PropertyDataForm"
 
 export default async function IndexPage() {
-  const { address, isConnecting, isDisconnected } = useAccount()
   const { data, isError, isLoading } = usePropertyManagerGetProperties({
     address: PROPERTY_MANAGER_ADDRESS,
   })
@@ -55,7 +54,6 @@ export default async function IndexPage() {
   console.log(data)
   return (
     <section className="container grid items-center gap-6 pb-8 pt-6 md:py-10">
-      
       <h2 className="text-red-700 font-bold">Find your properties</h2>
       <div className="grid grid-cols-4 gap-12 px-16">
         {data?.map((property) => (
@@ -81,18 +79,6 @@ function Balance(props: { account: string | undefined }) {
       Balance: {data?.formatted} {data?.symbol}
     </div>
   )
-}
-
-function ReadTestToken() {
-  const { data, isError, isLoading } = useTestTokenRead({
-    address: TEST_TOKEN_ADDRESS,
-    functionName: "balanceOf",
-    args: ["0x8683301fE5Cf1c9AbcF2BDC5fbCB7370Ea0147FE"],
-  })
-
-  if (isLoading) return <Skeleton className="w-[100px] h-[20px] rounded-full" />
-  if (isError) return <div>Error fetching balance</div>
-  return <div>Balance: {ethers.formatEther(data!)}</div>
 }
 
 function ReadPropertyManager() {
@@ -126,28 +112,32 @@ function PropertyCard({ contractAddress }: { contractAddress: string }) {
     address: contractAddress as `0x${string}`,
     functionName: "propertyAddress",
   })
+  console.log("property data", data)
   if (data != undefined) {
     const addressString = data.join(", ")
     return (
       <Card className="flex flex-col items-center overflow-hidden h-full w-full border-none">
         <CardHeader className="p-0 relative">
           <div className="relative rounded-md">
-            <p className="text-zinc-100 absolute z-10 top-5 left-5 font-semibold text-2xl drop-shadow-2xl">Atlanta,GA</p>
+            <p className="text-zinc-100 absolute z-10 top-5 left-5 font-semibold text-xl drop-shadow-2xl">{`${data[2]},${data[3]}`}</p>
             <Image
               alt=""
               height={330}
-              width= {250}
+              width={250}
               className={cn(
                 "h-auto w-auto object-cover transition-all hover:scale-110",
                 "aspect-[3/4] rounded-md z-0 duration-1000"
               )}
               src="https://plus.unsplash.com/premium_photo-1677735108001-cd9b99efd5ff?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80"
             ></Image>
-            <Button variant="ghost" className="left-5 z-10 bottom-4 bg-slate-400 absolute bg-opacity-50 text-white" onClick={() => router.push(`/properties/${contractAddress}`)}
-          >
-            View Property
-          </Button>
-        {/* <CardFooter className="flex justify-between p-0">
+            <Button
+              variant="ghost"
+              className="left-5 z-10 bottom-4 bg-slate-400 absolute bg-opacity-50 text-white"
+              onClick={() => router.push(`/properties/${contractAddress}`)}
+            >
+              View Property
+            </Button>
+            {/* <CardFooter className="flex justify-between p-0">
     
         </CardFooter> */}
           </div>

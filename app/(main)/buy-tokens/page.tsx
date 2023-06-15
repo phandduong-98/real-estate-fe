@@ -1,48 +1,100 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import {
   PROPERTY_MANAGER_ADDRESS,
   TEST_TOKEN_ADDRESS,
 } from "@/constants/contract-artifacts"
 import { ethers } from "ethers"
-import { Form } from "react-hook-form"
+import { ArrowDown } from "lucide-react"
 
 import {
   usePropertyManagerExchangeRatio,
+  usePropertyManagerPurchaseTokens,
   usePropertyManagerWrite,
   useTestTokenWrite,
 } from "@/lib/generated"
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { useToast } from "@/components/ui/use-toast"
 
-import { FormToast } from "../_components/CreateNewPropertyFormToaster"
-
 const page = () => {
-  const message = GetTokenExchangeRatio()
-  return (
-    <div>
-      <form className="w-full max-w-sm">
-        <div className="flex items-center border-b border-teal-500 py-2">
-          <input
-            className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
-            type="text"
-            placeholder={message}
-            aria-label="MaticToken"
-            id="maticToken"
-          />
-        </div>
-      </form>
+  
+  const [maticValue, setMaticValue] = useState<string>("0")
+  const [tokenValue, setTokenValue] = useState<string>("0")
+  const ratio = 1000
+  const handleMaticChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseFloat(e.target.value)  
+    let result = 0
+    if (value !== 0) {    
+      result = value * ratio   
+      setMaticValue(value.toString())  
+    }     
+    setTokenValue(result.toString())   
+  }
+  
 
-      <br></br>
-      <PurchaseTokens></PurchaseTokens>
-      <br></br>
-      <ApproveTestToken></ApproveTestToken>
-    </div>
+  const handleTokenChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseFloat(e.target.value)  
+    const result = value / ratio
+    if(value !== 0) {
+      setMaticValue(result.toString())
+    }
+    setTokenValue(value.toString())
+  }
+
+  return (
+    <Card className="flex flex-col items-center w-[550px]">
+      <CardHeader>
+        <CardTitle>Swap</CardTitle>
+        <CardDescription>
+          Get your tokens and start to advertise property
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form>
+          <div className="grid w-full items-center gap-4 rounded-md">
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="name">MATIC</Label>
+              <Input
+                type="number"
+                value={maticValue}
+                onChange={handleMaticChange}
+                id="matic"
+                placeholder=""
+              />
+            </div>
+            <ArrowDown className="" />
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="name">TOKEN</Label>
+              <Input
+                type="number"
+            
+                value={tokenValue}
+                onChange={handleTokenChange}
+                id="token"
+                placeholder=""
+              />
+            </div>
+          </div>
+        </form>
+      </CardContent>
+      <CardFooter className="flex justify-between">
+          <PurchaseTokens amount={maticValue} />
+      </CardFooter>
+    </Card>
   )
 }
-
-function getTokenform() {}
 
 function ApproveTestToken() {
   const { data, isLoading, isSuccess, write } = useTestTokenWrite({
@@ -66,23 +118,23 @@ function ApproveTestToken() {
   )
 }
 
-function PurchaseTokens() {
-  const { toast } = useToast()
-  const { data, isLoading, isSuccess, isError, write } =
-    usePropertyManagerWrite({
-      address: PROPERTY_MANAGER_ADDRESS,
-      functionName: "purchaseTokens",
-      value: ethers.parseEther("0.001"),
-    })
 
+function PurchaseTokens({amount} : {amount: string}) {
+  const { toast } = useToast()
+  const { data, isLoading, isSuccess, isError, write } = usePropertyManagerPurchaseTokens({
+    address: PROPERTY_MANAGER_ADDRESS,
+    functionName: "purchaseTokens",
+    value: ethers.parseEther(amount),
+  })
+  
   useEffect(() => {
     if (isSuccess) {
       const txLink = `https://mumbai.polygonscan.com/tx/${data?.hash}`
       toast({
-        title: "Tokens Purchased",
+        title: "Token Purchased",
         description: (
           <>
-            You have successfully purchased tokens.
+            Your token balance has been credited.
             <br />
             <Link href={txLink} className="mt-2 text-blue-500">
               View transaction on PolygonScan.
@@ -92,30 +144,10 @@ function PurchaseTokens() {
       })
     }
   }, [isSuccess])
-  return (
-    <div>
-      <button
-        className="flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 text-sm border-4 text-white py-1 px-2 rounded"
-        type="button"
-        onClick={() => write()}
-      >
-        Purchase
-      </button>
-      {isLoading ? <p>Checking Wallet</p> : <p></p>}
-      {isSuccess ? <p>Transaction: {JSON.stringify(data)}</p> : <p></p>}
-    </div>
-  )
-}
 
-function GetTokenExchangeRatio() {
-  const { data, isLoading, isSuccess } = usePropertyManagerExchangeRatio({
-    address: PROPERTY_MANAGER_ADDRESS,
-  })
-  console.log(data)
-  if (data != undefined) {
-    const message = `1 MATIC TOKEN = ${data} Tokens`
-    return message
-  }
+  return <Button disabled={!write} onClick={()=>{
+    write?.()
+  }}>Purchase</Button>
 }
 
 export default page
