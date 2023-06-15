@@ -8,6 +8,8 @@ import { MainNav } from "@/components/main-nav"
 import { ThemeToggle } from "@/components/theme-toggle"
 import TokenBalance from "@/app/(main)/_components/TokenBalance"
 
+import { UserNav } from "./user-nav"
+
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background">
@@ -18,6 +20,7 @@ export function SiteHeader() {
             <TokenBalance address="0xdFA4C3D580479eAb0dd0122cd6661fdc3215239f" />
             <ThemeToggle />
             <ConnectButton />
+            <UserNav />
           </nav>
         </div>
       </div>

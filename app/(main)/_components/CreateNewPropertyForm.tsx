@@ -1,7 +1,10 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
-import { PROPERTY_MANAGER_ADDRESS } from "@/constants/contract-artifacts"
+import {
+  PROPERTY_MANAGER_ADDRESS,
+  TEST_TOKEN_ADDRESS,
+} from "@/constants/contract-artifacts"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { dataLength } from "ethers"
 import { useForm } from "react-hook-form"
@@ -21,10 +24,7 @@ import {
   PropertyOwnerContactDto,
   PropertyOwnerContactSchema,
 } from "@/types/create-new-property-form"
-import {
-  usePropertyManagerCreateNewProperty,
-  usePropertyManagerWrite,
-} from "@/lib/generated"
+import { usePropertyManagerCreateNewProperty } from "@/lib/generated"
 import { formatLabel, separateString } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
@@ -42,7 +42,6 @@ import { useToast } from "@/components/ui/use-toast"
 import { DatePicker } from "@/components/date-picker"
 
 const CreateNewPropertyForm = () => {
-  const { toast } = useToast()
   const [nextForm, setNextForm] = useState(0)
   const [fullFormData, setFullFormData] = useState<PropertyFormData>([
     {} as PropertyAddressDto,
@@ -63,28 +62,29 @@ const CreateNewPropertyForm = () => {
   const formAddress = useForm<PropertyAddressDto>({
     resolver: zodResolver(PropertyAddressSchema),
     defaultValues: {
+      //generate random address
       unitNumber: "123",
-      street: "123",
-      city: "123",
-      state: "123",
-      zip: "123",
-      country: "123",
+      street: "64th Ave",
+      city: "Rego Park",
+      state: "North Dakota",
+      zip: "11374",
+      country: "United States",
     },
   })
 
   const formData = useForm<PropertyDataDto>({
     resolver: zodResolver(PropertyDataSchema),
     defaultValues: {
-      name: "123",
-      description: "123",
-      propertyStatus: "123",
-      propertyType: "123",
-      landSize: "123",
-      pricePerSqft: "123",
-      bedrooms: "123",
-      bathrooms: "123",
-      yearBuilt: "123",
-      lastSoldPrice: "123",
+      name: "My Home",
+      description: "This is a beautiful house located in a quiet neighborhood.",
+      propertyStatus: "For Sale",
+      propertyType: "Single Family Home",
+      landSize: "10000",
+      pricePerSqft: "150",
+      bedrooms: "3",
+      bathrooms: "2",
+      yearBuilt: "1998",
+      lastSoldPrice: "300000",
       lastSoldDate: new Date(),
     },
   })
@@ -92,9 +92,9 @@ const CreateNewPropertyForm = () => {
   const formContact = useForm<PropertyOwnerContactDto>({
     resolver: zodResolver(PropertyOwnerContactSchema),
     defaultValues: {
-      email: "123@gmail.com",
-      phone: "123",
-      name: "123",
+      email: "example@gmail.com",
+      phone: "(718) 459-0632",
+      name: "Alyson Roberts",
     },
   })
 

@@ -57,7 +57,7 @@ const page = () => {
     <div className="flex items-center justify-center mt-32">
       <Card className="flex flex-col items-center w-[550px]">
         <CardHeader>
-          <CardTitle>Swap</CardTitle>
+          <CardTitle className="flex justify-center">Swap</CardTitle>
           <CardDescription>
             Get your tokens and start to advertise property
           </CardDescription>
@@ -103,27 +103,6 @@ const page = () => {
   )
 }
 
-function ApproveTestToken() {
-  const { data, isLoading, isSuccess, write } = useTestTokenWrite({
-    address: TEST_TOKEN_ADDRESS,
-    functionName: "approve",
-    args: [PROPERTY_MANAGER_ADDRESS, ethers.MaxUint256],
-  })
-
-  return (
-    <div>
-      <button
-        className="flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 text-sm border-4 text-white py-1 px-2 rounded"
-        type="button"
-        onClick={() => write()}
-      >
-        Approve
-      </button>
-      {isLoading ? <p>Loading ..</p> : <p></p>}
-      {isSuccess ? <p>Successfully Approved ..</p> : <p></p>}
-    </div>
-  )
-}
 
 function PurchaseTokens({ amount }: { amount: string }) {
   const { toast } = useToast()

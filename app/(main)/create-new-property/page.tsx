@@ -1,33 +1,6 @@
 "use client"
 
-import Link from "next/link"
-import {
-  PROPERTY_MANAGER_ADDRESS,
-  TEST_TOKEN_ADDRESS,
-} from "@/constants/contract-artifacts"
-import { ethers } from "ethers"
-import { set } from "react-hook-form"
-import {
-  useAccount,
-  useBalance,
-  useConnect,
-  useContractRead,
-  useContractReads,
-  useEnsName,
-} from "wagmi"
-import { InjectedConnector } from "wagmi/connectors/injected"
-
-import { siteConfig } from "@/config/site"
-import {
-  usePropertyManagerRead,
-  usePropertyManagerWrite,
-  useTestTokenRead,
-} from "@/lib/generated"
-import { stringify } from "@/lib/utils"
-import { Button, buttonVariants } from "@/components/ui/button"
 import CreateNewPropertyForm from "@/app/(main)/_components/CreateNewPropertyForm"
-
-import { ProfileForm } from "../_components/PropertyDataForm"
 
 export default async function CreateNewPropertyPage() {
   return (
