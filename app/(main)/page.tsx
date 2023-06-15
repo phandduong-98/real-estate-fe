@@ -55,7 +55,7 @@ export default async function IndexPage() {
     <section className="container grid items-center gap-6 pb-8 pt-6 md:py-10">
       <h2 className="text-red-700 font-bold">Find your properties</h2>
       <div className="grid grid-cols-4 gap-12 px-16">
-        {data?.slice(18)?.map((property, index) => (
+        {data?.filter((_, index) => index !== 19 && index >= 18).map((property, index) => (
           <div key={index} className="col-span-1 ">
             <PropertyCard contractAddress={property} />
           </div>
@@ -92,12 +92,18 @@ function ReadPropertyManager() {
 }
 
 function PropertyCard({ contractAddress }: { contractAddress: string }) {
-  const router = useRouter()
-
+  const router = useRouter()  
   const { data } = usePropertyRead({
     address: contractAddress as `0x${string}`,
     functionName: "propertyAddress",
   })
+  const { data: images } = usePropertyRead({
+    address: contractAddress as `0x${string}`,
+    functionName: "getImagesCid",
+  })
+
+  console.log(data)
+
   if (data != undefined) {
     const addressString = data.join(", ")
     return (
@@ -105,7 +111,7 @@ function PropertyCard({ contractAddress }: { contractAddress: string }) {
         <CardHeader className="p-0 relative">
           <div className="relative rounded-md">
             <p className="text-zinc-100 absolute z-10 top-5 left-5 font-semibold text-xl drop-shadow-2xl">{`${data[2]},${data[3]}`}</p>
-            <Image
+            <img
               alt=""
               height={330}
               width={250}
@@ -113,10 +119,10 @@ function PropertyCard({ contractAddress }: { contractAddress: string }) {
                 "h-auto w-auto object-cover transition-all hover:scale-110",
                 "aspect-[3/4] rounded-md z-0 duration-1000"
               )}
-              src="https://plus.unsplash.com/premium_photo-1677735108001-cd9b99efd5ff?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80"
-            ></Image>
+              src={`https://cloudflare-ipfs.com/ipfs/${images?.[0]}`}
+            ></img>
             <Button
-              variant="ghost"
+              variant="outline"
               className="left-5 z-10 bottom-4 bg-slate-400 absolute bg-opacity-50 text-white"
               onClick={() => router.push(`/properties/${contractAddress}`)}
             >
