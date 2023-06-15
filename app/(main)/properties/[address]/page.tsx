@@ -6,6 +6,7 @@ import { Bath, BedSingle, Scaling } from "lucide-react"
 
 import { usePropertyRead } from "@/lib/generated"
 import { MyCarousel } from "@/components/carousel"
+
 function PropertyAddress({ contractAddress }: { contractAddress: string }) {
   const { data } = usePropertyRead({
     address: contractAddress as `0x${string}`,
@@ -70,7 +71,7 @@ const Property = ({ params }: { params: { address: string } }) => {
   return (
     <div className="wrapper bg-red-50 antialiased text-gray-900">
       <div>
-        <MyCarousel images={images as any} name={propertyName}/>
+        <MyCarousel images={images as any} name={propertyName} />
         <div className="relative px-4 -mt-16  ">
           <div className="bg-white p-6 rounded-lg shadow-lg">
             <div className="flex items-baseline">

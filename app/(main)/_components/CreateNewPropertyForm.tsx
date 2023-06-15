@@ -134,7 +134,6 @@ const CreateNewPropertyForm = () => {
   }, [fullFormData])
 
   useEffect(() => {
-
     if (finalFullFormData?.length === 4 && finalFullFormData[3].length > 0) {
       write?.()
     }
