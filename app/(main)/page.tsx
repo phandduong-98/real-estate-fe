@@ -55,7 +55,7 @@ export default async function IndexPage() {
     <section className="container grid items-center gap-6 pb-8 pt-6 md:py-10">
       <h2 className="text-red-700 font-bold">Find your properties</h2>
       <div className="grid grid-cols-4 gap-12 px-16">
-        {data?.map((property, index) => (
+        {data?.slice(18)?.map((property, index) => (
           <div key={index} className="col-span-1 ">
             <PropertyCard contractAddress={property} />
           </div>

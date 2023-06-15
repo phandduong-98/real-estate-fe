@@ -9,7 +9,7 @@ export const MyCarousel = ({ images, name }: { images: string[], name: string })
         <div>
           <img 
             className="h-80 w-80 object-cover"
-            src={`https://ipfs.io/ipfs/${i}`} />
+            src={`https://cloudflare-ipfs.com/ipfs/${i}`} />
           <p className="legend">{name}</p>
         </div>
       ))}
