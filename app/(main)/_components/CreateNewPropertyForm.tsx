@@ -63,28 +63,28 @@ const CreateNewPropertyForm = () => {
   const formAddress = useForm<PropertyAddressDto>({
     resolver: zodResolver(PropertyAddressSchema),
     defaultValues: {
-      unitNumber: "123",
-      street: "123",
-      city: "123",
-      state: "123",
-      zip: "123",
-      country: "123",
+      unitNumber: "",
+      street: "",
+      city: "",
+      state: "",
+      zip: "",
+      country: "",
     },
   })
 
   const formData = useForm<PropertyDataDto>({
     resolver: zodResolver(PropertyDataSchema),
     defaultValues: {
-      name: "123",
-      description: "123",
-      propertyStatus: "123",
-      propertyType: "123",
-      landSize: "123",
-      pricePerSqft: "123",
-      bedrooms: "123",
-      bathrooms: "123",
-      yearBuilt: "123",
-      lastSoldPrice: "123",
+      name: "",
+      description: "",
+      propertyStatus: "",
+      propertyType: "",
+      landSize: "",
+      pricePerSqft: "",
+      bedrooms: "",
+      bathrooms: "",
+      yearBuilt: "",
+      lastSoldPrice: "",
       lastSoldDate: new Date(),
     },
   })
@@ -92,9 +92,9 @@ const CreateNewPropertyForm = () => {
   const formContact = useForm<PropertyOwnerContactDto>({
     resolver: zodResolver(PropertyOwnerContactSchema),
     defaultValues: {
-      email: "123@gmail.com",
-      phone: "123",
-      name: "123",
+      email: "",
+      phone: "",
+      name: "",
     },
   })
 
