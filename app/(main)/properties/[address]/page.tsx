@@ -60,9 +60,9 @@ const Property = ({ params }: { params: { address: string } }) => {
     <div className="wrapper bg-red-50 antialiased text-gray-900">
       <div>
         <img
-          src="https://plus.unsplash.com/premium_photo-1677735108001-cd9b99efd5ff?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80"
+          src="https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=870&q=80"
           alt=" random imgee"
-          className="max-h-[60rem] object-center rounded-lg shadow-md"
+          className="object-cover h-screen w-full"
         />
 
         <div className="relative px-4 -mt-16  ">
