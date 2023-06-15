@@ -1,7 +1,10 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
-import { PROPERTY_MANAGER_ADDRESS } from "@/constants/contract-artifacts"
+import {
+  PROPERTY_MANAGER_ADDRESS,
+  TEST_TOKEN_ADDRESS,
+} from "@/constants/contract-artifacts"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { dataLength } from "ethers"
 import { useForm } from "react-hook-form"
@@ -21,10 +24,7 @@ import {
   PropertyOwnerContactDto,
   PropertyOwnerContactSchema,
 } from "@/types/create-new-property-form"
-import {
-  usePropertyManagerCreateNewProperty,
-  usePropertyManagerWrite,
-} from "@/lib/generated"
+import { usePropertyManagerCreateNewProperty } from "@/lib/generated"
 import { formatLabel, separateString } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
@@ -42,7 +42,6 @@ import { useToast } from "@/components/ui/use-toast"
 import { DatePicker } from "@/components/date-picker"
 
 const CreateNewPropertyForm = () => {
-  const { toast } = useToast()
   const [nextForm, setNextForm] = useState(0)
   const [fullFormData, setFullFormData] = useState<PropertyFormData>([
     {} as PropertyAddressDto,
@@ -69,12 +68,14 @@ const CreateNewPropertyForm = () => {
       state: "",
       zip: "",
       country: "",
+
     },
   })
 
   const formData = useForm<PropertyDataDto>({
     resolver: zodResolver(PropertyDataSchema),
     defaultValues: {
+
       name: "",
       description: "",
       propertyStatus: "",
@@ -336,7 +337,9 @@ const CreateNewPropertyForm = () => {
                   isLoading={isLoading}
                   isSuccess={isSuccess}
                   data={data}
-                />{" "}
+                  title={"Create Property"}
+                  description="Your property has been created successfully"
+                />
               </div>
             </div>
           </form>

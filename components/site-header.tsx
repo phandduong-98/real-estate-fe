@@ -9,6 +9,8 @@ import { MainNav } from "@/components/main-nav"
 import { ThemeToggle } from "@/components/theme-toggle"
 import TokenBalance from "@/app/(main)/_components/TokenBalance"
 
+import { UserNav } from "./user-nav"
+
 export function SiteHeader() {
   
   const { address, isConnecting, isDisconnected } = useAccount()
@@ -30,6 +32,7 @@ export function SiteHeader() {
             
             <ThemeToggle />
             <ConnectButton />
+            <UserNav />
           </nav>
         </div>
       </div>

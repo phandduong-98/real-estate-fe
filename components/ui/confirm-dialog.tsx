@@ -1,9 +1,20 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import {
+  PROPERTY_MANAGER_ADDRESS,
+  TEST_TOKEN_ADDRESS,
+} from "@/constants/contract-artifacts"
 import { CheckSquare } from "lucide-react"
-import { PacmanLoader } from "react-spinners"
+import { BeatLoader, PacmanLoader } from "react-spinners"
+import { useAccount } from "wagmi"
 
+import {
+  usePropertyManagerCreateNewProperty,
+  usePropertyManagerFee,
+  usePropertyManagerWrite,
+  useTestTokenAllowance,
+  useTestTokenApprove,
+} from "@/lib/generated"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -21,11 +32,15 @@ export function ConfirmDialog({
   isLoading,
   isSuccess,
   data,
+  title,
+  description,
 }: {
   form: string
   isLoading: boolean
   isSuccess: boolean
   data: any
+  title: string
+  description: string
 }) {
   const [isOpen, setIsOpen] = useState(false)
   const { toast } = useToast()
@@ -35,12 +50,17 @@ export function ConfirmDialog({
     if (isSuccess) {
       const txLink = `https://mumbai.polygonscan.com/tx/${data?.hash}`
       toast({
-        title: "Property Created",
+        title: title,
         description: (
           <>
-            Your property has been created.
+            {description}
             <br />
-            <Link href={txLink} rel="noopener noreferrer" target="_blank" className="mt-2 text-blue-500">
+            <Link
+              href={txLink}
+              rel="noopener noreferrer"
+              target="_blank"
+              className="mt-2 text-blue-500"
+            >
               View transaction on PolygonScan.
             </Link>
           </>
@@ -93,13 +113,82 @@ export function ConfirmDialog({
               <Button variant="outline" onClick={() => setIsOpen(false)}>
                 Cancel
               </Button>
-              <Button type="submit" form={form}>
-                Create
-              </Button>
+              <ApproveButton form={form} />
             </DialogFooter>
           </>
         )}
       </DialogContent>
     </Dialog>
+  )
+}
+
+const ApproveButton = ({ form }: any) => {
+  const { address, isConnecting, isDisconnected } = useAccount()
+
+  const { data: accountAllowance, isLoading: allowanceIsLoading, refetch:refetchAllowance } =
+    useTestTokenAllowance({
+      address: TEST_TOKEN_ADDRESS,
+      args: [address!, PROPERTY_MANAGER_ADDRESS],
+      watch: true,
+    })
+
+  const { data: fee, refetch: refetchFee } = usePropertyManagerFee({
+    address: PROPERTY_MANAGER_ADDRESS,
+    watch: true,
+  })
+
+  const {
+    data: approve,
+    isLoading,
+    isSuccess,
+    status,
+    write,
+    writeAsync
+  } = useTestTokenApprove({
+    address: TEST_TOKEN_ADDRESS,
+    args: [PROPERTY_MANAGER_ADDRESS, fee!],
+  })
+
+  const [isApproved, setIsApproved] = useState(false)
+
+  useEffect(() => {
+    refetchFee()
+    refetchAllowance()
+    console.log("status", status)
+    if (accountAllowance && fee) {
+      if (accountAllowance >= fee) {
+        setIsApproved(true)
+        console.log("inside if",accountAllowance, fee)
+      }
+    }
+    console.log("isSuccess", isSuccess)
+    console.log("isApproved", isApproved)
+  }, [accountAllowance, fee, isLoading, isSuccess, usePropertyManagerFee, useTestTokenAllowance])
+
+
+
+  return (
+    <>
+      {isApproved && (
+        <Button type="submit" form={form}>
+          Create
+        </Button>
+      )}
+
+      {!isApproved && (
+           <>
+           <Button
+             disabled={isLoading}
+             className="image"
+             onClick={async () => {
+               const result  = await writeAsync?.()
+               console.log(result)
+             }}
+           >
+             {isLoading ? <BeatLoader color="#36d7b7" /> : <p>Approve</p>}
+           </Button>
+         </>
+      )}
+    </>
   )
 }
