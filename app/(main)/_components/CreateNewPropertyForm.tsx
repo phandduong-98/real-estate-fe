@@ -5,6 +5,12 @@ import {
   PROPERTY_MANAGER_ADDRESS,
   TEST_TOKEN_ADDRESS,
 } from "@/constants/contract-artifacts"
+import {
+  propertyAddressDefaultData,
+  propertyDataDefaultData,
+  propertyImagesDefaultData,
+  propertyOwnerDefaultData,
+} from "@/constants/contract-artifacts/propertyDefaultValue"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { dataLength } from "ethers"
 import { useForm } from "react-hook-form"
@@ -61,49 +67,23 @@ const CreateNewPropertyForm = () => {
 
   const formAddress = useForm<PropertyAddressDto>({
     resolver: zodResolver(PropertyAddressSchema),
-    defaultValues: {
-      unitNumber: "",
-      street: "",
-      city: "",
-      state: "",
-      zip: "",
-      country: "",
-
-    },
+    defaultValues: propertyAddressDefaultData,
   })
 
   const formData = useForm<PropertyDataDto>({
     resolver: zodResolver(PropertyDataSchema),
-    defaultValues: {
-
-      name: "",
-      description: "",
-      propertyStatus: "",
-      propertyType: "",
-      landSize: "",
-      pricePerSqft: "",
-      bedrooms: "",
-      bathrooms: "",
-      yearBuilt: "",
-      lastSoldPrice: "",
-      lastSoldDate: new Date(),
-    },
+    defaultValues: propertyDataDefaultData,
   })
 
   const formContact = useForm<PropertyOwnerContactDto>({
     resolver: zodResolver(PropertyOwnerContactSchema),
-    defaultValues: {
-      email: "",
-      phone: "",
-      name: "",
-    },
+    defaultValues: propertyOwnerDefaultData,
   })
 
   const formImages = useForm<z.infer<typeof ImagesSchema>>({
     resolver: zodResolver(ImagesSchema),
     defaultValues: {
-      images:
-        "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR, QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR, QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
+      images: propertyImagesDefaultData,
     },
   })
 

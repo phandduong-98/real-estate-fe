@@ -125,12 +125,15 @@ export function ConfirmDialog({
 const ApproveButton = ({ form }: any) => {
   const { address, isConnecting, isDisconnected } = useAccount()
 
-  const { data: accountAllowance, isLoading: allowanceIsLoading, refetch:refetchAllowance } =
-    useTestTokenAllowance({
-      address: TEST_TOKEN_ADDRESS,
-      args: [address!, PROPERTY_MANAGER_ADDRESS],
-      watch: true,
-    })
+  const {
+    data: accountAllowance,
+    isLoading: allowanceIsLoading,
+    refetch: refetchAllowance,
+  } = useTestTokenAllowance({
+    address: TEST_TOKEN_ADDRESS,
+    args: [address!, PROPERTY_MANAGER_ADDRESS],
+    watch: true,
+  })
 
   const { data: fee, refetch: refetchFee } = usePropertyManagerFee({
     address: PROPERTY_MANAGER_ADDRESS,
@@ -143,7 +146,7 @@ const ApproveButton = ({ form }: any) => {
     isSuccess,
     status,
     write,
-    writeAsync
+    writeAsync,
   } = useTestTokenApprove({
     address: TEST_TOKEN_ADDRESS,
     args: [PROPERTY_MANAGER_ADDRESS, fee!],
@@ -158,14 +161,19 @@ const ApproveButton = ({ form }: any) => {
     if (accountAllowance && fee) {
       if (accountAllowance >= fee) {
         setIsApproved(true)
-        console.log("inside if",accountAllowance, fee)
+        console.log("inside if", accountAllowance, fee)
       }
     }
     console.log("isSuccess", isSuccess)
     console.log("isApproved", isApproved)
-  }, [accountAllowance, fee, isLoading, isSuccess, usePropertyManagerFee, useTestTokenAllowance])
-
-
+  }, [
+    accountAllowance,
+    fee,
+    isLoading,
+    isSuccess,
+    usePropertyManagerFee,
+    useTestTokenAllowance,
+  ])
 
   return (
     <>
@@ -176,18 +184,18 @@ const ApproveButton = ({ form }: any) => {
       )}
 
       {!isApproved && (
-           <>
-           <Button
-             disabled={isLoading}
-             className="image"
-             onClick={async () => {
-               const result  = await writeAsync?.()
-               console.log(result)
-             }}
-           >
-             {isLoading ? <BeatLoader color="#36d7b7" /> : <p>Approve</p>}
-           </Button>
-         </>
+        <>
+          <Button
+            disabled={isLoading}
+            className="image"
+            onClick={async () => {
+              const result = await writeAsync?.()
+              console.log(result)
+            }}
+          >
+            {isLoading ? <BeatLoader color="#36d7b7" /> : <p>Approve</p>}
+          </Button>
+        </>
       )}
     </>
   )

@@ -5,10 +5,8 @@ import { useRouter } from "next/navigation"
 import { Bath, BedSingle, Scaling } from "lucide-react"
 
 import { usePropertyRead } from "@/lib/generated"
-
+import { MyCarousel } from "@/components/carousel"
 function PropertyAddress({ contractAddress }: { contractAddress: string }) {
-  const router = useRouter()
-
   const { data } = usePropertyRead({
     address: contractAddress as `0x${string}`,
     functionName: "propertyAddress",
@@ -20,12 +18,19 @@ function PropertyAddress({ contractAddress }: { contractAddress: string }) {
 }
 
 function PropertyData(contractAddress: string) {
-  const router = useRouter()
   const { data } = usePropertyRead({
     address: contractAddress as `0x${string}`,
     functionName: "propertyData",
   })
   return data
+}
+
+function PropertyImages(contractAddress: string) {
+  const { data, isLoading } = usePropertyRead({
+    address: contractAddress as `0x${string}`,
+    functionName: "getImagesCid",
+  })
+  return { data, isLoading }
 }
 
 const Property = ({ params }: { params: { address: string } }) => {
@@ -56,15 +61,16 @@ const Property = ({ params }: { params: { address: string } }) => {
     propertyLastSoldDate = propertydata[10]
   }
 
+  const { data: images, isLoading } = usePropertyRead({
+    address: params.address as `0x${string}`,
+    functionName: "getImagesCid",
+  })
+  if (isLoading) return <div>Loading...</div>
+
   return (
     <div className="wrapper bg-red-50 antialiased text-gray-900">
       <div>
-        <img
-          src="https://plus.unsplash.com/premium_photo-1677735108001-cd9b99efd5ff?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80"
-          alt=" random imgee"
-          className="max-h-[60rem] object-center rounded-lg shadow-md"
-        />
-
+        <MyCarousel images={images as any} name={propertyName}/>
         <div className="relative px-4 -mt-16  ">
           <div className="bg-white p-6 rounded-lg shadow-lg">
             <div className="flex items-baseline">
@@ -73,22 +79,28 @@ const Property = ({ params }: { params: { address: string } }) => {
               </span>
               <div className="ml-2 text-gray-600 uppercase text-xs font-semibold tracking-wider"></div>
             </div>
-            
+
             <h4 className="mt-1 text-xl font-semibold uppercase leading-tight truncate text-orange-700">
               {propertyName}
               <PropertyAddress contractAddress={params.address} />
             </h4>
             <br></br>
-            <div >{propertyDescription}</div>
+            <div>{propertyDescription}</div>
             <br></br>
             <div className="flex items-stretch ...">
               <div className="text-rose-950">{propertyBedrooms}&nbsp;</div>
               <BedSingle color="#209d73" strokeWidth={1} />
-              <div className="text-rose-950">&nbsp;&nbsp;&nbsp;{propertyBathrooms}&nbsp;</div>
+              <div className="text-rose-950">
+                &nbsp;&nbsp;&nbsp;{propertyBathrooms}&nbsp;
+              </div>
               <Bath color="#209d73" strokeWidth={1} />
-              <div className="text-rose-950">&nbsp;&nbsp;&nbsp;{propertylandSize}&nbsp;</div>
+              <div className="text-rose-950">
+                &nbsp;&nbsp;&nbsp;{propertylandSize}&nbsp;
+              </div>
               <Scaling color="#209d73" strokeWidth={1} />
-              <div className="text-rose-950">&nbsp;&nbsp;&nbsp;{propertyType}&nbsp;</div>
+              <div className="text-rose-950">
+                &nbsp;&nbsp;&nbsp;{propertyType}&nbsp;
+              </div>
             </div>
             <br></br>
             <div className="text-rose-950">{propertyYearBuilt}</div>

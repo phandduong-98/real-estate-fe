@@ -103,7 +103,6 @@ const page = () => {
   )
 }
 
-
 function PurchaseTokens({ amount }: { amount: string }) {
   const { toast } = useToast()
   const { data, isLoading, isSuccess, isError, write } =
