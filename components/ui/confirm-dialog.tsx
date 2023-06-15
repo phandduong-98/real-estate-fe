@@ -21,11 +21,15 @@ export function ConfirmDialog({
   isLoading,
   isSuccess,
   data,
+  title,
+  description,
 }: {
   form: string
   isLoading: boolean
   isSuccess: boolean
   data: any
+  title: string
+  description: string
 }) {
   const [isOpen, setIsOpen] = useState(false)
   const { toast } = useToast()
@@ -35,12 +39,17 @@ export function ConfirmDialog({
     if (isSuccess) {
       const txLink = `https://mumbai.polygonscan.com/tx/${data?.hash}`
       toast({
-        title: "Property Created",
+        title: title,
         description: (
           <>
-            Your property has been created.
+            {description}
             <br />
-            <Link href={txLink} rel="noopener noreferrer" target="_blank" className="mt-2 text-blue-500">
+            <Link
+              href={txLink}
+              rel="noopener noreferrer"
+              target="_blank"
+              className="mt-2 text-blue-500"
+            >
               View transaction on PolygonScan.
             </Link>
           </>

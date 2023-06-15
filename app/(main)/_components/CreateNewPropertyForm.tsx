@@ -336,7 +336,9 @@ const CreateNewPropertyForm = () => {
                   isLoading={isLoading}
                   isSuccess={isSuccess}
                   data={data}
-                />{" "}
+                  title={"Create Property"}
+                  description="Your property has been created successfully"
+                />
               </div>
             </div>
           </form>
