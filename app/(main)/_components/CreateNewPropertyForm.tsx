@@ -62,29 +62,30 @@ const CreateNewPropertyForm = () => {
   const formAddress = useForm<PropertyAddressDto>({
     resolver: zodResolver(PropertyAddressSchema),
     defaultValues: {
-      //generate random address
-      unitNumber: "123",
-      street: "64th Ave",
-      city: "Rego Park",
-      state: "North Dakota",
-      zip: "11374",
-      country: "United States",
+      unitNumber: "",
+      street: "",
+      city: "",
+      state: "",
+      zip: "",
+      country: "",
+
     },
   })
 
   const formData = useForm<PropertyDataDto>({
     resolver: zodResolver(PropertyDataSchema),
     defaultValues: {
-      name: "My Home",
-      description: "This is a beautiful house located in a quiet neighborhood.",
-      propertyStatus: "For Sale",
-      propertyType: "Single Family Home",
-      landSize: "10000",
-      pricePerSqft: "150",
-      bedrooms: "3",
-      bathrooms: "2",
-      yearBuilt: "1998",
-      lastSoldPrice: "300000",
+
+      name: "",
+      description: "",
+      propertyStatus: "",
+      propertyType: "",
+      landSize: "",
+      pricePerSqft: "",
+      bedrooms: "",
+      bathrooms: "",
+      yearBuilt: "",
+      lastSoldPrice: "",
       lastSoldDate: new Date(),
     },
   })
@@ -92,9 +93,9 @@ const CreateNewPropertyForm = () => {
   const formContact = useForm<PropertyOwnerContactDto>({
     resolver: zodResolver(PropertyOwnerContactSchema),
     defaultValues: {
-      email: "example@gmail.com",
-      phone: "(718) 459-0632",
-      name: "Alyson Roberts",
+      email: "",
+      phone: "",
+      name: "",
     },
   })
 
