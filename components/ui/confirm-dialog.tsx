@@ -157,15 +157,11 @@ const ApproveButton = ({ form }: any) => {
   useEffect(() => {
     refetchFee()
     refetchAllowance()
-    console.log("status", status)
     if (accountAllowance && fee) {
       if (accountAllowance >= fee) {
         setIsApproved(true)
-        console.log("inside if", accountAllowance, fee)
       }
     }
-    console.log("isSuccess", isSuccess)
-    console.log("isApproved", isApproved)
   }, [
     accountAllowance,
     fee,
@@ -190,7 +186,6 @@ const ApproveButton = ({ form }: any) => {
             className="image"
             onClick={async () => {
               const result = await writeAsync?.()
-              console.log(result)
             }}
           >
             {isLoading ? <BeatLoader color="#36d7b7" /> : <p>Approve</p>}

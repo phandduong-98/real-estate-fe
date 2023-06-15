@@ -14,7 +14,6 @@ const TokenBalance = ({ address }: { address: string }) => {
     functionName: "balanceOf",
     args: [address as `0x${string}`],
   })
-  console.log("token balance", data)
   if (isLoading) return <Skeleton className="w-[100px] h-[20px] rounded-full" />
   if (isError) return <div>Error fetching balance</div>
   return (

@@ -116,11 +116,9 @@ const CreateNewPropertyForm = () => {
       newFormData[3] = imagesArray
       return newFormData
     })
-    console.log("fullFormData", fullFormData)
   }
 
   useEffect(() => {
-    console.log("fullFormData updated", fullFormData)
     if (fullFormData[3].length <= 0) return
     const newFullFormData = fullFormData.map((data, index) => {
       if (index === 1) {
@@ -136,7 +134,6 @@ const CreateNewPropertyForm = () => {
   }, [fullFormData])
 
   useEffect(() => {
-    console.log("finalFullFormData updated", finalFullFormData)
 
     if (finalFullFormData?.length === 4 && finalFullFormData[3].length > 0) {
       write?.()

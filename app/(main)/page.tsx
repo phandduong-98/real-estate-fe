@@ -91,18 +91,6 @@ function ReadPropertyManager() {
   return <div>{data}</div>
 }
 
-function ReadPropertyOwner() {
-  const { data, isError, isLoading } = usePropertyRead({
-    address: "0xcbA2534c14244381C040e908c684AcD1EB7098eb",
-    functionName: "propertyAddress",
-    // args: [],
-  })
-  console.log(data?.map((property) => property))
-  if (isLoading) return <Skeleton className="w-[100px] h-[20px] rounded-full" />
-  if (isError) return <div>Error fetching owner</div>
-  return <div>AMAL PROPERTY ADDRESS {data}</div>
-}
-
 function PropertyCard({ contractAddress }: { contractAddress: string }) {
   const router = useRouter()
 
@@ -110,7 +98,6 @@ function PropertyCard({ contractAddress }: { contractAddress: string }) {
     address: contractAddress as `0x${string}`,
     functionName: "propertyAddress",
   })
-  console.log("property data", data)
   if (data != undefined) {
     const addressString = data.join(", ")
     return (
