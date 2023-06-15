@@ -1,23 +1,41 @@
-# next-template
+# Real Estate dApp
 
-A Next.js 13 template for building apps with Radix UI and Tailwind CSS.
+A tokenized real estate advertising app utilizing blockchain to store the data.
+
+The frontend is built using Next.js, shadcn/ui component library, and Tailwind CSS. 
 
 ## Usage
+In the project directory, you can run:
+### `yarn`
+Initialize the project (installing necessary packages/libraries)
 
-```bash
-npx create-next-app -e https://github.com/shadcn/next-template
-```
+### `yarn run dev`
+
+Run the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+
 
 ## Features
 
-- Next.js 13 App Directory
-- Radix UI Primitives
-- Tailwind CSS
-- Icons from [Lucide](https://lucide.dev)
-- Dark mode with `next-themes`
-- Tailwind CSS class sorting, merging and linting.
+- View real estate information
+- Purchase tokens to be used for listing the advertisement 
+- Add real estate advertisement.
+
+## Screen Shots
+Homepage
+![](./assets/screenshots/homepage.png)
+
+Property Details
+![](./assets/screenshots/property.png)
+
+Purchase tokens
+![](./assets/screenshots/purchase-tokens.png)
+
+Add Property
+![](./assets/screenshots/add.png)
+
 
 ## License
 
 Licensed under the [MIT license](https://github.com/shadcn/ui/blob/main/LICENSE.md).
-# real-estate-fe
+
